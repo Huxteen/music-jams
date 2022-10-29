@@ -3,7 +3,8 @@ from rest_framework.exceptions import APIException
 
 class PerformerExistValidation(APIException):
     status_code = 400
-    default_detail = "Jam already has a perfomer or Band role not in user role."
+    default_detail = "Jam already has a perfomer "
+    default_detail += "or Band role not in user role."
     default_code = "performer_already_exist"
 
 

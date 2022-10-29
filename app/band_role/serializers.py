@@ -16,7 +16,7 @@ class UserBandRoleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserBandRole
-        fields = ('id', 'band_role_id', 'user_id')
+        fields = ('band_role_id', 'user_id')
         read_only_fields = ('id', 'user_id')
 
 
