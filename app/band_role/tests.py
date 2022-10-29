@@ -1,12 +1,12 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
+# from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
-from band_role.models import BandRole
+# from band_role.models import BandRole
 
 
-BAND_ROLE_URL = reverse('band_role:band_role-list')
+BAND_ROLE_LIST_URL = reverse('band-role-list')
 
 
 # Create your tests here.
@@ -17,7 +17,7 @@ class publicBandRoleApiTest(TestCase):
 
     def test_login_required(self):
         """Test that login is required for retrieving orders"""
-        res = self.client.get(BAND_ROLE_URL)
+        res = self.client.get(BAND_ROLE_LIST_URL)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 

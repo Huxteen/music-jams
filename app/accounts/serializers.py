@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import gettext_lazy as _
-from band_role.serializers import ListUserBandRoleSerializer
+from band_role.serializers import (UserBandRoleSerializer,
+                                   ListUserBandRoleSerializer)
 from band_role.models import UserBandRole
-
 from rest_framework import serializers
 
 
@@ -17,14 +17,6 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 
-    def create(self, validated_data):
-        """Create a new user with encrypted password and return it."""
-        user_band_role = validated_data.pop('user_band_roles')
-        user = get_user_model().objects.create_user(**validated_data)
-        for user_role in user_band_role:
-            UserBandRole.objects.create(user_id=user, **user_role)
-        return user
-
     def update(self, instance, validated_data):
         """Update a user setting the password correctly and return it"""
         password = validated_data.pop('password', None)
@@ -35,6 +27,27 @@ class UserSerializer(serializers.ModelSerializer):
         if password:
             user.set_password(password)
             user.save()
+        return user
+
+
+class CreateUserSerializer(serializers.ModelSerializer):
+    """Serializer for the user object."""
+    user_band_roles = UserBandRoleSerializer(many=True, required=False)
+
+    class Meta:
+        model = get_user_model()
+        fields = ('id', 'email', 'password', 'first_name', 'last_name',
+                  'user_band_roles')
+        read_only_fields = ('id',)
+        extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
+
+    def create(self, validated_data):
+        """Create a new user with encrypted password and return it."""
+        user_band_role = validated_data.pop('user_band_roles', None)
+        user = get_user_model().objects.create_user(**validated_data)
+        if user_band_role:
+            for user_role in user_band_role:
+                UserBandRole.objects.create(user_id=user, **user_role)
         return user
 
 

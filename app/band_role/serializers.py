@@ -25,6 +25,6 @@ class ListUserBandRoleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserBandRole
-        fields = ('id', 'band_role_id',)
+        fields = ('id', 'band_role_id')
         read_only_fields = ('id',)
         depth = 1
