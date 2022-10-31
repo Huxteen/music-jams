@@ -1,6 +1,7 @@
 from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
 from jams import serializers
 from utils.renderers import CustomRenderer
 from jams.models import (Jam, JamBandRole, JamInvitation)
@@ -27,7 +28,7 @@ class CreateJamAPIView(generics.CreateAPIView):
 
 
 class JamList(generics.ListAPIView):
-    """Manage data in the database"""
+    """List loggedin user Jams"""
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     queryset = Jam.objects.all().order_by('-id')
@@ -59,6 +60,8 @@ class JamListAPiView(generics.ListAPIView):
     serializer_class = serializers.JamListSerializer
     queryset = Jam.objects.all().order_by('-id')
     renderer_classes = [CustomRenderer]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['status']
 
 
 class JamBandRoleList(generics.ListCreateAPIView):

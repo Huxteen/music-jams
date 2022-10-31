@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'band_role',
     'jams',
     'utils',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
