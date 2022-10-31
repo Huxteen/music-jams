@@ -18,3 +18,9 @@ class JamJoinedAlreadyValidation(APIException):
     status_code = 400
     default_detail = "You already joined this jam."
     default_code = "jam_joined_already"
+
+
+class JamIsPrivateValidation(APIException):
+    status_code = 400
+    default_detail = "This jam is a private jam."
+    default_code = "jam_is_private"

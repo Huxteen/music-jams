@@ -15,7 +15,7 @@ class JamBandRoleCreateSerializer(serializers.ModelSerializer):
 
 class JamSerializer(serializers.ModelSerializer):
     """Serializer for Jam objects"""
-    jam_band_role = JamBandRoleCreateSerializer(many=True)
+    jam_band_role = JamBandRoleCreateSerializer(many=True, required=False)
 
     class Meta:
         model = Jam
@@ -33,10 +33,11 @@ class JamSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create a new jam with the band role."""
-        jam_band_role = validated_data.pop('jam_band_role')
+        jam_band_role = validated_data.pop('jam_band_role', None)
         jam = Jam.objects.create(**validated_data)
-        for jam_role in jam_band_role:
-            JamBandRole.objects.create(jam=jam, **jam_role)
+        if jam_band_role:
+            for jam_role in jam_band_role:
+                JamBandRole.objects.create(jam=jam, **jam_role)
         return jam
 
 

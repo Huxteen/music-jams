@@ -6,10 +6,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-# status, name, description, location, datetime, is_public, host, band_role(s)
 # Create your models here.
-
-
 def return_date_time():
     now = timezone.now()
     return now + timedelta(days=3)

@@ -8,13 +8,13 @@ from band_role.models import BandRole, UserBandRole
 from jams.exceptions import (
     PerformerExistValidation,
     JamJoinedAlreadyValidation,
+    JamIsPrivateValidation,
     JamStartedAlreadyValidation)
 from django.utils import timezone
 
 
 class CreateJamAPIView(generics.CreateAPIView):
     """Manage data in the database"""
-
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     queryset = Jam.objects.all().order_by('-id')
@@ -36,7 +36,7 @@ class JamList(generics.ListAPIView):
 
     def get_queryset(self):
         return Jam.objects.filter(
-            host=self.request.user.id)
+            host=self.request.user.id).order_by('-id')
 
 
 class JamDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -71,9 +71,10 @@ class JamBandRoleList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         jam_id = self.request.GET.get('jam')
-        response = JamBandRole.objects.filter(performer=self.request.user.id)
+        response = JamBandRole.objects.filter(
+            performer=self.request.user.id).order_by('-id')
         if jam_id:
-            response = JamBandRole.objects.filter(jam=jam_id)
+            response = JamBandRole.objects.filter(jam=jam_id).order_by('-id')
         return response
 
     def perform_create(self, serializer):
@@ -114,7 +115,7 @@ class StartJamDetail(generics.UpdateAPIView):
     """
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
-    queryset = Jam.objects.all().order_by('id')
+    queryset = Jam.objects.all().order_by('-id')
     serializer_class = serializers.StartJamSerializer
     renderer_classes = [CustomRenderer]
 
@@ -155,6 +156,10 @@ class JamInvitationList(generics.ListCreateAPIView):
             user=self.request.user.id, jam=jam).first()
 
         jam_query = Jam.objects.filter(id=queryset.jam.id).first()
+
+        if jam_query.is_public is False:
+            raise JamIsPrivateValidation
+
         if jam_query.status:
             raise JamStartedAlreadyValidation()
 
